@@ -25,10 +25,12 @@ export class UserService {
           newUser.name = user.name;
           newUser.username = user.username;
           newUser.email = user.email;
+          newUser.role = user.role;
           newUser.password = passwordHash;
 
           return from(this.userRepository.save(newUser)).pipe(
             map((user: User) => {
+              console.log(user);
               const { password, ...result } = user;
               return result;
             }),
@@ -63,6 +65,14 @@ export class UserService {
   }
 
   updateOne(id: number, user: User): Observable<any> {
+    delete user.email;
+    delete user.password;
+    return from(this.userRepository.update(id, user)).pipe(
+      switchMap(() => this.findOne(id)),
+    );
+  }
+
+  updaterole(id: number, user: User): Observable<any> {
     delete user.email;
     delete user.password;
     return from(this.userRepository.update(id, user)).pipe(
