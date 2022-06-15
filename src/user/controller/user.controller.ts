@@ -8,7 +8,11 @@ import {
   Post,
   Put,
   Query,
+  Request,
+  Res,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from '../service/user.service';
 import { catchError, map, Observable, of } from 'rxjs';
@@ -17,6 +21,24 @@ import { hasRoles } from 'src/auth/decorator/role.decorator';
 import { JwtAuthGuard } from '../../auth/guards/jwt-guard';
 import { RolesGuard } from 'src/auth/guards/roles-guard';
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import path = require('path');
+import { join } from 'path';
+import { v4 as uuidv4 } from 'uuid';
+
+export const storage = {
+  storage: diskStorage({
+    destination: './uploads',
+    filename: (req, file, cb) => {
+      const filename: string =
+        path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
+      const extension: string = path.parse(file.originalname).ext;
+
+      cb(null, `${filename}${extension}`);
+    },
+  }),
+};
 
 @Controller('users')
 export class UserController {
@@ -86,5 +108,28 @@ export class UserController {
   @Put(':id/role')
   updaterole(@Body() body: User, @Param('id') id: string): Observable<any> {
     return this.userService.updateOne(Number(id), body);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file', storage))
+  uploadFile(@UploadedFile() file, @Request() req): Observable<Object> {
+    // console.log(file);
+    const user: User = req.user.user;
+    // console.log(user);
+
+    return this.userService
+      .updateOne(user.id, { profileImage: file.filename })
+      .pipe(map((user: User) => ({ profileImage: user.profileImage })));
+  }
+
+  @Get('profile-image/:imagename')
+  findProfileImage(
+    @Param('imagename') imagename,
+    @Res() res,
+  ): Observable<Object> {
+    return of(
+      res.sendFile(join(process.cwd(), 'uploads/profileimage/' + imagename)),
+    );
   }
 }
