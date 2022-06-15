@@ -26,6 +26,7 @@ import { diskStorage } from 'multer';
 import path = require('path');
 import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import { UserIsUserGuard } from 'src/auth/guards/user-is-user-guard';
 
 export const storage = {
   storage: diskStorage({
@@ -98,6 +99,7 @@ export class UserController {
     return this.userService.deleteOne(Number(id));
   }
 
+  @UseGuards(JwtAuthGuard, UserIsUserGuard)
   @Put(':id')
   updateOne(@Body() body: User, @Param('id') id: string): Observable<any> {
     return this.userService.updateOne(Number(id), body);
@@ -114,10 +116,7 @@ export class UserController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file', storage))
   uploadFile(@UploadedFile() file, @Request() req): Observable<Object> {
-    // console.log(file);
     const user: User = req.user.user;
-    // console.log(user);
-
     return this.userService
       .updateOne(user.id, { profileImage: file.filename })
       .pipe(map((user: User) => ({ profileImage: user.profileImage })));
