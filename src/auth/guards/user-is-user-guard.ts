@@ -25,7 +25,7 @@ export class UserIsUserGuard implements CanActivate {
 
     const param = request.params;
     // console.log(param);
-    const user: User = request.user.user;
+    const user: User = request.user;
     // console.log(user.id);
 
     return this.userService.findOne(user.id).pipe(

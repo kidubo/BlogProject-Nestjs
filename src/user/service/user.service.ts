@@ -35,7 +35,7 @@ export class UserService {
 
           return from(this.userRepository.save(newUser)).pipe(
             map((user: User) => {
-              console.log(user);
+              // console.log(user);
               const { password, ...result } = user;
               return result;
             }),

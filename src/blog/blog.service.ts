@@ -6,7 +6,6 @@ import { User } from 'src/user/models/user.interface';
 import { Blog } from 'src/blog/dtos/blog-interface';
 import { BlogEntity } from './entities/blog-entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from 'src/user/models/user.entity';
 import { Repository } from 'typeorm';
 const slugify = require('slugify');
 
@@ -19,7 +18,7 @@ export class BlogService {
 
   create(user: User, blog: Blog): Observable<Blog> {
     blog.author = user;
-    console.log(blog);
+    // console.log(blog);
     return this.generateSlug(blog.title).pipe(
       switchMap((slug: string) => {
         blog.slug = slug;
@@ -45,6 +44,18 @@ export class BlogService {
 
   findOne(id: number): Observable<Blog> {
     return from(this.blogRepository.findOne(id, { relations: ['author'] }));
+  }
+
+  updateOne(id: number, blog: Blog): Observable<Blog> {
+    return from(this.blogRepository.update(id, blog)).pipe(
+      switchMap(() => {
+        return this.findOne(id);
+      }),
+    );
+  }
+
+  deleteOne(id: number): Observable<any> {
+    return from(this.blogRepository.delete(id));
   }
 
   generateSlug(title: string): Observable<string> {

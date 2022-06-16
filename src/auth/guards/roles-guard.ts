@@ -29,7 +29,7 @@ export class RolesGuard implements CanActivate {
     }
     const request = context.switchToHttp().getRequest();
     // console.log(request);
-    const user: User = request.user.user;
+    const user: User = request.user;
     // console.log(user);
     return this.userService.findOne(user.id).pipe(
       map((user: User) => {
@@ -44,7 +44,5 @@ export class RolesGuard implements CanActivate {
         return user && hasPermission;
       }),
     );
-
-    return true;
   }
 }

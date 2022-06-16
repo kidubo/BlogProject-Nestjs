@@ -1,4 +1,4 @@
-// import { Blog } from 'src/blog/dtos/blog-interface';
+import { Blog } from 'src/blog/dtos/blog-interface';
 
 export interface User {
   id?: number;
@@ -8,7 +8,7 @@ export interface User {
   password?: string;
   role?: UserRole;
   profileImage?: string;
-  // blogs?: Blog[];
+  blogs?: Blog[];
 }
 
 export enum UserRole {
