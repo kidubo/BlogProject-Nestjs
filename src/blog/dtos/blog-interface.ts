@@ -1,16 +1,16 @@
 import { User } from 'src/user/models/user.interface';
 
 export interface Blog {
-  id?: string;
+  id?: number;
   title?: string;
   slug?: string;
   description?: string;
   body?: string;
-  created?: Date;
-  updated?: Date;
-  like?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  likes?: number;
+  author?: User;
   headerImage?: string;
   publishedDate?: Date;
-  isPublished?: Date;
-  author?: User;
+  isPublished?: boolean;
 }
