@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { switchMap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { Injectable } from '@nestjs/common';
 import { Observable, of, from } from 'rxjs';
 import { User } from 'src/user/models/user.interface';
@@ -7,6 +7,11 @@ import { Blog } from 'src/blog/dtos/blog-interface';
 import { BlogEntity } from './entities/blog-entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 const slugify = require('slugify');
 
 @Injectable()
@@ -29,6 +34,30 @@ export class BlogService {
 
   findAll(): Observable<Blog[]> {
     return from(this.blogRepository.find({ relations: ['author'] }));
+  }
+
+  paginateAll(options: IPaginationOptions): Observable<Pagination<Blog>> {
+    return from(
+      paginate<BlogEntity>(this.blogRepository, options, {
+        relations: ['author'],
+      }),
+    ).pipe(map((blog: Pagination<Blog>) => blog));
+  }
+
+  paginateByUser(
+    options: IPaginationOptions,
+    userId: number,
+  ): Observable<Pagination<Blog>> {
+    return from(
+      paginate<BlogEntity>(this.blogRepository, options, {
+        relations: ['author'],
+        where: [
+          {
+            author: userId,
+          },
+        ],
+      }),
+    ).pipe(map((blog: Pagination<Blog>) => blog));
   }
 
   findByUser(userId: number): Observable<Blog[]> {
