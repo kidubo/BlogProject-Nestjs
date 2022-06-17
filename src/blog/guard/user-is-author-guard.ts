@@ -18,11 +18,8 @@ export class UserIsAuthorGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
 
     const params = request.params;
-    // console.log(params + ' request param');
     const blogId = Number(params.id);
-    // console.log(blogId + ' blog id');
     const user: User = request.user;
-    // console.log(user);
 
     return this.userService.findOne(user.id).pipe(
       switchMap((user: User) =>

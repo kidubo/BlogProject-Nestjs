@@ -25,7 +25,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Image } from './dtos/image-dto';
 import { join } from 'path';
 
-export const BLOG_ENTRIES_URL = 'http://localhost:3000/blog';
+export const BLOG_URL = 'http://localhost:3000/blog';
 
 export const storage = {
   storage: diskStorage({
@@ -67,7 +67,7 @@ export class BlogController {
     return this.blogService.paginateAll({
       limit: Number(limit),
       page: Number(page),
-      route: BLOG_ENTRIES_URL,
+      route: BLOG_URL,
     });
   }
 
@@ -83,7 +83,7 @@ export class BlogController {
       {
         limit: Number(limit),
         page: Number(page),
-        route: BLOG_ENTRIES_URL,
+        route: BLOG_URL,
       },
       userId,
     );
